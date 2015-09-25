@@ -1,30 +1,29 @@
 extern crate hyper;
 
-use std::{env, process};
+mod credentials;
+mod error;
+
+use std::process;
 
 use hyper::Client;
 use hyper::header::{Authorization, Basic, UserAgent};
 
+use error::Error;
+
 fn main() {
-    let user = match env::var("GITHUB_SWEEP_USER") {
-        Ok(val) => val,
-        Err(e) => {
-            println!("Error reading GITHUB_SWEEP_USER environment variable: {}", e);
-            process::exit(1)
-        }
-    };
+    let result = run();
 
-    let token = match env::var("GITHUB_SWEEP_TOKEN") {
-        Ok(val) => val,
-        Err(e) => {
-            println!("Error reading GITHUB_SWEEP_TOKEN environment variable: {}", e);
-            process::exit(1)
-        }
-    };
+    if result.is_err() {
+        println!("{}", result.unwrap_err());
+        process::exit(1);
+    }
+}
 
+fn run() -> Result<(), Error> {
+    let credentials = try!(credentials::from_env());
     let client = Client::new();
 
-    let auth_header = Authorization(Basic { username: user, password: Some(token) });
+    let auth_header = Authorization(Basic { username: credentials.username, password: Some(credentials.token) });
     let user_agent_header = UserAgent("github-sweep".to_owned());
 
     let request = client
@@ -42,4 +41,5 @@ fn main() {
     };
 
     println!("{:?}", response);
+    Ok(())
 }
