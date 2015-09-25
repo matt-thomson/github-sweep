@@ -26,6 +26,6 @@ impl Client {
             .headers(self.headers.clone())
             .body(body)
             .send()
-            .map_err(|err| Error::HttpError { url: url, err: err })
+            .map_err(|err| Error::Http { url: url, err: err })
     }
 }

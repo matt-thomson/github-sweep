@@ -4,6 +4,8 @@ mod credentials;
 mod error;
 mod http;
 
+use hyper::client::Response;
+
 use std::process;
 
 use http::Client;
@@ -21,8 +23,15 @@ fn main() {
 fn run() -> Result<(), Error> {
     let credentials = try!(credentials::from_env());
     let client = Client::new(credentials);
-    let response = try!(client.put("https://api.github.com/notifications", "{}"));
 
-    println!("{:?}", response);
-    Ok(())
+    let response = try!(client.put("https://api.github.com/notifications", "{}"));
+    check(&response)
+}
+
+fn check(response: &Response) -> Result<(), Error> {
+    if response.status.is_success() {
+        Ok(())
+    } else {
+        Err(Error::Request { status: response.status })
+    }
 }

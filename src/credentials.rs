@@ -15,5 +15,5 @@ pub fn from_env() -> Result<Credentials, Error> {
 }
 
 fn env_var(var: &'static str) -> Result<String, Error> {
-    env::var(var).map_err(|err| Error::EnvError { var: var, err: err })
+    env::var(var).map_err(|err| Error::Env { var: var, err: err })
 }
