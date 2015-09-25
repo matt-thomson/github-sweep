@@ -2,12 +2,11 @@ extern crate hyper;
 
 mod credentials;
 mod error;
+mod http;
 
 use std::process;
 
-use hyper::Client;
-use hyper::header::{Authorization, Basic, UserAgent};
-
+use http::Client;
 use error::Error;
 
 fn main() {
@@ -21,24 +20,8 @@ fn main() {
 
 fn run() -> Result<(), Error> {
     let credentials = try!(credentials::from_env());
-    let client = Client::new();
-
-    let auth_header = Authorization(Basic { username: credentials.username, password: Some(credentials.token) });
-    let user_agent_header = UserAgent("github-sweep".to_owned());
-
-    let request = client
-        .put("https://api.github.com/notifications")
-        .header(auth_header)
-        .header(user_agent_header)
-        .body("{}");
-
-    let response = match request.send() {
-        Ok(val) => val,
-        Err(e) => {
-            println!("Error making request: {}", e);
-            process::exit(1)
-        }
-    };
+    let client = Client::new(credentials);
+    let response = try!(client.put("https://api.github.com/notifications", "{}"));
 
     println!("{:?}", response);
     Ok(())
