@@ -1,0 +1,4 @@
+[package]
+name = "github-sweep"
+version = "0.1.0"
+authors = ["Matt Thomson <mattjohnthomson@gmail.com>"]
