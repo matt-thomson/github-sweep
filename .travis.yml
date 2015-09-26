@@ -1,5 +1,17 @@
+sudo: required
+services:
+  - docker
+
 language: rust
 rust:
   - stable
   - beta
   - nightly
+
+after_success: |
+  [ $TRAVIS_BRANCH = master ] &&
+  [ $TRAVIS_PULL_REQUEST = false ] &&
+  [ $TRAVIS_RUST_VERSION = stable ] &&
+  docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASSWORD &&
+  docker build -t mattthomson/github-sweep . &&
+  docker push mattthomson/github-sweep
