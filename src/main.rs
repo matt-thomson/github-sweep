@@ -6,6 +6,7 @@ mod http;
 
 use std::process;
 use std::thread;
+use std::time::Duration;
 
 use credentials::Credentials;
 use http::Client;
@@ -14,6 +15,7 @@ use error::Error;
 fn main() {
     let credentials = credentials();
     let client = Client::new(credentials);
+    let interval = Duration::from_secs(5);
 
     loop {
         let result = run(&client);
@@ -22,7 +24,7 @@ fn main() {
             println!("{}", result.unwrap_err());
         }
 
-        thread::sleep_ms(5000);
+        thread::sleep(interval);
     }
 }
 
