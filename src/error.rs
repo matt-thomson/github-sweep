@@ -11,12 +11,12 @@ pub enum Error {
 
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        match self {
-            &Error::Env { ref var, ref err } =>
+        match *self {
+            Error::Env { ref var, ref err } =>
                 write!(f, "Error reading environment variable {}: {}", var, err),
-            &Error::Http { ref url, ref err } =>
+            Error::Http { ref url, ref err } =>
                 write!(f, "Error making HTTP request to {}: {}", url, err),
-            &Error::Request { ref status } =>
+            Error::Request { ref status } =>
                 write!(f, "Invalid HTTP status ({})", status)
         }
     }
